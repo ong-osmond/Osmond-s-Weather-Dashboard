@@ -11,8 +11,9 @@
     <input type="text" id="searchCity"></input>
     <button id="search">Search</button>
     <ul id="current-weather">
-
     </ul>
+    <div id="forecast">
+    </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -20,25 +21,62 @@
     <script type="text/javascript">
         var key = "59e42ab69c520d95ac336e9cccb57653";
 
-        function getUVIndex(lat, lon) {
-            var queryURL = "https://api.openweathermap.org/data/2.5/uvi?appid=" +
-                key +
-                "&lat=" +
+        function getForecast(forecast) {
+            $("#forecast").empty();
+            var text = $("<h5>").text("Five Day Forecast");
+            $("#forecast").append(text);
+            for (i = 1; i <= 5; i++) {
+                var day = $("<ul>").text(getDate(forecast[i].dt));
+                $("#forecast").append(day);
+                var tempMin = $("<li>").text("Temp (min): " + forecast[i].temp.min + "C");
+                day.append(tempMin);
+                var tempMax = $("<li>").text("Temp (max): " + forecast[i].temp.max + "C");
+                day.append(tempMax);
+                var humidity = $("<li>").text("Humidity: " + forecast[i].humidity + "%");
+                day.append(humidity);
+            }
+        }
+
+
+        function getWeather(lat, lon) {
+            var queryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" +
                 lat +
                 "&lon=" +
-                lon;
+                lon +
+                "&units=metric&exclude=minutely,hourly&appid=" +
+                key;
             $.ajax({
                 url: queryURL,
                 method: "GET"
             }).then(function(response) {
-                var UVIndex = response.value;
-                var uv = $("<li>").text("UV Index : " + UVIndex);
-                $("#current-weather").append(uv);
+                var tempInCelsius = response.current.temp;
+                var temp = $("<li>").text("Temp : " +
+                    tempInCelsius.toFixed(1) +
+                    "C");
+                var humidity = $("<li>").text("Humidity : " + response.current.humidity + "%");
+                var windSpeed = $("<li>").text("Wind Speed : " + response.current.wind_speed + " m/s");
+                var uvIndex = $("<li>").text("UV Index : " + response.current.uvi);
+                $("#current-weather").append(temp);
+                $("#current-weather").append(humidity);
+                $("#current-weather").append(windSpeed);
+                $("#current-weather").append(uvIndex);
+                var forecast = response.daily;
+                console.log(forecast);
+                getForecast(forecast);
+
             })
 
         }
 
-        function getWeather(cityName) {
+
+        function getDate(date) {
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+            date = new Date(1000 * date);
+            return date.getDate() + "/" + months[date.getMonth()] + "/" + date.getFullYear();
+        }
+
+
+        function getCoordinates(cityName) {
 
             var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" +
                 cityName +
@@ -50,41 +88,32 @@
                 method: "GET"
             }).then(function(response) {
                     console.log(response);
-                    var cityName = $("<li>").text("Name: " + response.name);
-                    var tempInKelvin = response.main.temp;
-                    var tempInCelsius = response.main.temp - 273.15;
-                    var temp = $("<li>").text("Temp : " +
-                        tempInCelsius.toFixed(1) +
-                        "C");
-                    var humidity = $("<li>").text("Humidity : " + response.main.humidity + "%");
-                    var windSpeed = $("<li>").text("Wind : " + response.wind.speed + " m/s");
+                    var date = response.dt;
+                    date = getDate(date);
+                    var cityName = $("<li>").text(response.name + " " + date);
+                    $("#current-weather").append(cityName);
                     var cityLat = response.coord.lat;
                     var cityLon = response.coord.lon;
-                    getUVIndex(cityLat, cityLon);
-                    $("#current-weather").append(cityName);
-                    $("#current-weather").append(temp);
-                    $("#current-weather").append(humidity);
-                    $("#current-weather").append(windSpeed);
-
-
+                    getWeather(cityLat, cityLon);
                 }
 
             )
         }
 
-        function searchWeather() {
+        function searchCity() {
 
             var cityName = $("#searchCity").val();
-            console.log("I am search for the weather in this city: " + cityName);
+            $("#current-weather").empty();
+            console.log("I am searching for the weather in this city: " + cityName);
 
-            getWeather(cityName);
+            getCoordinates(cityName);
 
 
 
         }
 
         $("button").on("click",
-            searchWeather
+            searchCity
         );
     </script>
 </body>
