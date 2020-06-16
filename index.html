@@ -18,36 +18,32 @@
 
 
     <script type="text/javascript">
-        // function addArticles(newsArticles) {
-        //     for (i = 0; i < newsArticles.length; i++) {
-        //         var lineItem = $("<li>");
-        //         $("#articles-appear-here").append(lineItem);
-        //         const newsArticle = newsArticles[i].headline.main;
-        //         const author = newsArticles[i].byline.original;
-        //         const snippet = newsArticles[i].snippet;
-        //         const url = newsArticles[i].web_url;
-        //         console.log(newsArticle);
-        //         var headline = $("<a>").text(newsArticle);
-        //         lineItem.append(headline);
-        //         headline.attr("href", url);
-        //         headline.attr("target", "_blank");
-        //         var authorName = $("<p>").text(author);
-        //         lineItem.append(authorName);
-        //         var snippetText = $("<p>").text(snippet);
-        //         lineItem.append(snippetText);
+        var key = "59e42ab69c520d95ac336e9cccb57653";
 
-        //     }
-        // }
+        function getUVIndex(lat, lon) {
+            var queryURL = "https://api.openweathermap.org/data/2.5/uvi?appid=" +
+                key +
+                "&lat=" +
+                lat +
+                "&lon=" +
+                lon;
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            }).then(function(response) {
+                var UVIndex = response.value;
+                var uv = $("<li>").text("UV Index : " + UVIndex);
+                $("#current-weather").append(uv);
+            })
 
+        }
 
         function getWeather(cityName) {
-            var key = "59e42ab69c520d95ac336e9cccb57653";
+
             var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" +
                 cityName +
                 "&appid=" +
                 key;
-
-            console.log(queryURL);
 
             $.ajax({
                 url: queryURL,
@@ -64,12 +60,12 @@
                     var windSpeed = $("<li>").text("Wind : " + response.wind.speed + " m/s");
                     var cityLat = response.coord.lat;
                     var cityLon = response.coord.lon;
-                    var uv = $("<li>").text("UV Index : ");
+                    getUVIndex(cityLat, cityLon);
                     $("#current-weather").append(cityName);
                     $("#current-weather").append(temp);
                     $("#current-weather").append(humidity);
                     $("#current-weather").append(windSpeed);
-                    $("#current-weather").append(uv);
+
 
                 }
 
