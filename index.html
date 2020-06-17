@@ -10,10 +10,18 @@
     <p>Weather Dashboard</p>
     <input type="text" id="searchCity"></input>
     <button id="search">Search</button>
-    <ul id="current-weather">
-    </ul>
-    <div id="forecast">
+    <div id="search-history">Search History
+        <div id="cities"></div>
     </div>
+    </div>
+    <div style="float:left">
+        <h4>Current Weather</h4>
+        <ul id="current-weather">
+        </ul>
+        <div id="forecast">
+        </div>
+    </div>
+
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 
@@ -21,9 +29,13 @@
     <script type="text/javascript">
         var key = "59e42ab69c520d95ac336e9cccb57653";
 
+        var searchHistory = [];
+
+
+
         function getForecast(forecast) {
             $("#forecast").empty();
-            var text = $("<h5>").text("Five Day Forecast");
+            var text = $("<h4>").text("Five Day Forecast");
             $("#forecast").append(text);
             for (i = 1; i <= 5; i++) {
                 var day = $("<ul>").text(getDate(forecast[i].dt));
@@ -61,7 +73,6 @@
                 $("#current-weather").append(windSpeed);
                 $("#current-weather").append(uvIndex);
                 var forecast = response.daily;
-                console.log(forecast);
                 getForecast(forecast);
 
             })
@@ -87,7 +98,6 @@
                 url: queryURL,
                 method: "GET"
             }).then(function(response) {
-                    console.log(response);
                     var date = response.dt;
                     date = getDate(date);
                     var cityName = $("<li>").text(response.name + " " + date);
@@ -100,22 +110,63 @@
             )
         }
 
+        function listSearchHistory() {
+            $("#cities").empty();
+            if (JSON.parse(localStorage.searchHistory) != null) {
+                searchHistory = JSON.parse(localStorage.searchHistory);
+            } //Retrieve existing searchHistory from local storage
+            for (i = searchHistory.length - 1; i >= (searchHistory.length - 5); i--) {
+                var cityName = JSON.parse(localStorage.searchHistory)[i];
+                if (cityName == null) {
+                    return;
+                } else {
+                    var city = $("<button>").text(cityName.toUpperCase());
+                    city.attr("class", "city-button");
+                    $("#cities").append(city);
+                }
+            }
+        }
+
         function searchCity() {
 
             var cityName = $("#searchCity").val();
             $("#current-weather").empty();
-            console.log("I am searching for the weather in this city: " + cityName);
-
             getCoordinates(cityName);
+            if (localStorage.getItem("searchHistory") == null ||
+                localStorage.getItem("searchHistory") == 'undefined') {
+                searchHistory.push(cityName);
+                localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
+            } else {
+                if (JSON.parse(localStorage.searchHistory) != null) {
+                    searchHistory = JSON.parse(localStorage.searchHistory);
+                } //Retrieve existing searchHistory from local storage
+                searchHistory.push(cityName); //Fill in the initialsAndScoreInputArray
+                localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
 
 
-
+            }
+            listSearchHistory();
         }
 
-        $("button").on("click",
+        function loadInitialCity() {
+            var searchHistoryLength = parseInt((JSON.parse(localStorage.searchHistory)).length - 1)
+            var lastCityName = JSON.parse(localStorage.searchHistory)[searchHistoryLength];
+            getCoordinates(lastCityName);
+        }
+
+        $("#search").on("click",
             searchCity
         );
+
+        $("button").on("click", ".city-button", function(event) {
+            console.log("Clicked");
+        })
+
+        listSearchHistory();
+
+        loadInitialCity();
     </script>
+
 </body>
 
 </html>
