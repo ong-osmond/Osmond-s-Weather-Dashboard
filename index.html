@@ -40,6 +40,9 @@
             for (i = 1; i <= 5; i++) {
                 var day = $("<ul>").text(getDate(forecast[i].dt));
                 $("#forecast").append(day);
+                var iconURL = "http://openweathermap.org/img/wn/" + forecast[i].weather[0].icon + ".png";
+                var icon = $("<img src=" + iconURL + ">");
+                $("#forecast").append(icon);
                 var tempMin = $("<li>").text("Temp (min): " + forecast[i].temp.min + "C");
                 day.append(tempMin);
                 var tempMax = $("<li>").text("Temp (max): " + forecast[i].temp.max + "C");
@@ -61,13 +64,27 @@
                 url: queryURL,
                 method: "GET"
             }).then(function(response) {
+                console.log(response);
                 var tempInCelsius = response.current.temp;
                 var temp = $("<li>").text("Temp : " +
                     tempInCelsius.toFixed(1) +
                     "C");
+                var iconURL = "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + ".png";
+                var icon = $("<img src=" + iconURL + ">");
                 var humidity = $("<li>").text("Humidity : " + response.current.humidity + "%");
                 var windSpeed = $("<li>").text("Wind Speed : " + response.current.wind_speed + " m/s");
                 var uvIndex = $("<li>").text("UV Index : " + response.current.uvi);
+                var uvColor = "";
+                if (response.current.uvi <= 5) {
+                    uvIndex.attr("style", "color:yellow;"); // "moderate";
+                } else if (response.current.uvi <= 7) {
+                    uvIndex.attr("style", "color:orange;"); //uvColor = "high";
+                } else if (response.current.uvi <= 10) {
+                    uvIndex.attr("style", "color:red;"); //"very high";
+                } else {
+                    uvIndex.attr("style", "color:violet;");
+                }
+                $("#current-weather").append(icon);
                 $("#current-weather").append(temp);
                 $("#current-weather").append(humidity);
                 $("#current-weather").append(windSpeed);
@@ -121,7 +138,8 @@
                     return;
                 } else {
                     var city = $("<button>").text(cityName.toUpperCase());
-                    city.attr("class", "city-button");
+                    city.addClass("city-button");
+                    city.attr("id", "city-" + i);
                     $("#cities").append(city);
                 }
             }
@@ -157,10 +175,6 @@
         $("#search").on("click",
             searchCity
         );
-
-        $("button").on("click", ".city-button", function(event) {
-            console.log("Clicked");
-        })
 
         listSearchHistory();
 
