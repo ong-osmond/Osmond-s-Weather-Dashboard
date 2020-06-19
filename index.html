@@ -3,207 +3,51 @@
 
 <head>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css" integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+    <link rel="stylesheet" href="./style.css" />
     <title>Weather Dashboard</title>
 </head>
 
 <body>
-    <p>Weather Dashboard</p>
-    <input type="text" id="searchCity"></input>
-    <button id="search">Search</button>
-    <div id="search-history">Search History
-        <div id="cities"></div>
-        <button id="clear-history">Clear searched cities</button>
-    </div>
-    </div>
-    <div style="float:left">
-        <h4>Current Weather</h4>
-        <ul id="current-weather">
-        </ul>
-        <div id="forecast">
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary fixed-top">
+        <h4>Weather Dashboard</h4>
+    </nav>
+    <div class="container" style="margin-top: 50px; margin-left: 50px">
+        <div class="row">
+            <!-- Search and search history column -->
+            <div class="col-md-3">
+                <div class="input-group" style="margin-top: 40px">
+                    <input type="text" class="form-control" placeholder="Search for a city" id="searchCity">
+                    <div class="input-group-append">
+                        <button class="btn btn-secondary" type="button" id="search">
+                        <i class="fa fa-search"></i>
+                      </button>
+                    </div>
+                </div>
+                <div class="btn-group-vertical" id="search-history">
+                    <br>
+                    <div id="cities"></div>
+                    <br>
+                    <button id="clear-history" class="btn btn-secondary btn-md btn-block">Clear History</button>
+                </div>
+            </div>
+            <!-- Current weather column -->
+            <div class="col-md-3">
+                <h4>Current Weather</h4>
+                <ul id="current-weather">
+                </ul>
+            </div>
+            <!-- Forecast column -->
+            <div class="col-md-6 table" id="forecast" style="margin-top:30px">
+            </div>
         </div>
     </div>
-
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-
-
-    <script type="text/javascript">
-        var key = "59e42ab69c520d95ac336e9cccb57653";
-        var forecastDays = 5; //configurable number of days to forecast
-        var searchHistory = [];
-        var searchHistoryLength = 5; //configurable number of search history 
-
-        //Get forecast for the next days
-        function getForecast(forecast) {
-            $("#forecast").empty();
-            var text = $("<h4>").text("Five Day Forecast");
-            $("#forecast").append(text);
-            for (i = 1; i <= forecastDays; i++) {
-                var day = $("<ul>").text(getDate(forecast[i].dt));
-                $("#forecast").append(day);
-                var iconURL = "http://openweathermap.org/img/wn/" + forecast[i].weather[0].icon + ".png";
-                var icon = $("<img src=" + iconURL + ">");
-                day.append(icon);
-                var tempMin = $("<li>").text("Temp (min): " + forecast[i].temp.min + "C");
-                day.append(tempMin);
-                var tempMax = $("<li>").text("Temp (max): " + forecast[i].temp.max + "C");
-                day.append(tempMax);
-                var humidity = $("<li>").text("Humidity: " + forecast[i].humidity + "%");
-                day.append(humidity);
-            }
-        }
-
-
-        function getWeather(lat, lon) {
-            var queryURL = "https://api.openweathermap.org/data/2.5/onecall?lat=" +
-                lat +
-                "&lon=" +
-                lon +
-                "&units=metric&exclude=minutely,hourly&appid=" +
-                key;
-            $.ajax({
-                url: queryURL,
-                method: "GET"
-            }).then(function(response) {
-                console.log(response);
-                var tempInCelsius = response.current.temp;
-                var temp = $("<li>").text("Temp : " +
-                    tempInCelsius.toFixed(1) +
-                    "C");
-                var iconURL = "http://openweathermap.org/img/wn/" + response.current.weather[0].icon + ".png";
-                var icon = $("<img src=" + iconURL + ">");
-                var humidity = $("<li>").text("Humidity : " + response.current.humidity + "%");
-                var windSpeed = $("<li>").text("Wind Speed : " + response.current.wind_speed + " m/s");
-                var uvIndex = $("<li>").text("UV Index : " + response.current.uvi);
-                var uvColor = "";
-                if (response.current.uvi <= 5) {
-                    uvIndex.attr("style", "color:yellow;"); //"moderate";
-                } else if (response.current.uvi <= 7) {
-                    uvIndex.attr("style", "color:orange;"); //"high"
-                } else if (response.current.uvi <= 10) {
-                    uvIndex.attr("style", "color:red;"); //"very high"
-                } else {
-                    uvIndex.attr("style", "color:violet;"); //"extreme"
-                }
-                $("#current-weather").append(icon);
-                $("#current-weather").append(temp);
-                $("#current-weather").append(humidity);
-                $("#current-weather").append(windSpeed);
-                $("#current-weather").append(uvIndex);
-                var forecast = response.daily;
-                getForecast(forecast);
-
-            })
-
-        }
-
-        function getDate(date) {
-            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-            date = new Date(1000 * date);
-            return date.getDate() + "/" + months[date.getMonth()] + "/" + date.getFullYear();
-        }
-
-
-        function getCoordinates(cityName) {
-
-            var queryURL = "https://api.openweathermap.org/data/2.5/weather?q=" +
-                cityName +
-                "&appid=" +
-                key;
-
-            $.ajax({
-                url: queryURL,
-                method: "GET",
-                error: function() {
-                    alert("Cannot get data for the last city you entered.");
-                    console.log(searchHistory);
-                }
-            }).then(function(response) {
-                    var date = response.dt;
-                    date = getDate(date);
-                    var cityName = $("<li>").text(response.name + " " + date);
-                    $("#current-weather").append(cityName);
-                    var cityLat = response.coord.lat;
-                    var cityLon = response.coord.lon;
-                    getWeather(cityLat, cityLon);
-                }
-
-            )
-        }
-
-        function listSearchHistory() {
-            $("#cities").empty();
-            if (JSON.parse(localStorage.searchHistory) != null) {
-                searchHistory = JSON.parse(localStorage.searchHistory);
-            } //Retrieve existing searchHistory from local storage
-            for (i = searchHistory.length - 1; i >= (searchHistory.length - searchHistoryLength); i--) {
-                var cityName = JSON.parse(localStorage.searchHistory)[i];
-                if (cityName == null) {
-                    return;
-                } else {
-                    var city = $("<button>").text(cityName.toUpperCase());
-                    city.addClass("city-button");
-                    city.attr("id", "city-" + i);
-                    $("#cities").append(city);
-                    //Add event handler for selecting a city from the search history
-                    city.on("click", function(event) {
-                        event.preventDefault();
-                        $("#current-weather").empty();
-                        $("#forecast").empty();
-                        var cityClicked = event.target.textContent;
-                        getCoordinates(cityClicked);
-                    });
-                }
-            }
-        }
-
-        function searchCity() {
-
-            var cityName = $("#searchCity").val();
-            $("#current-weather").empty();
-            getCoordinates(cityName);
-            if (localStorage.getItem("searchHistory") == null ||
-                localStorage.getItem("searchHistory") == 'undefined') {
-                searchHistory.push(cityName);
-                localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
-            } else {
-                if (JSON.parse(localStorage.searchHistory) != null) {
-                    searchHistory = JSON.parse(localStorage.searchHistory);
-                } //Retrieve existing searchHistory from local storage
-                searchHistory.push(cityName); //Fill in the initialsAndScoreInputArray
-                localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
-
-
-            }
-            listSearchHistory();
-        }
-
-        function loadInitialCity() {
-            var searchHistoryLength = parseInt((JSON.parse(localStorage.searchHistory)).length - 1)
-            var lastCityName = JSON.parse(localStorage.searchHistory)[searchHistoryLength];
-            getCoordinates(lastCityName);
-        }
-
-
-        $("#search").on("click",
-            searchCity
-        );
-
-        $("#clear-history").on("click", function(event) {
-            event.preventDefault();
-            localStorage.removeItem("searchHistory");
-            $("#cities").empty();
-            $("#current-weather").empty();
-            $("#forecast").empty();
-        })
-
-        if (localStorage.searchHistory != null) {
-            listSearchHistory();
-        }
-
-        loadInitialCity();
-    </script>
-
+    <script src="./script.js"></script>
 </body>
 
 </html>
