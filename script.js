@@ -94,6 +94,8 @@ function getCoordinates(cityName) {
         url: queryURL,
         method: "GET",
         error: function() {
+            $("#current-weather").empty();
+            $("#forecast").empty();
             alert("Cannot get data for the last city you entered.");
         }
     }).then(function(response) {
@@ -159,6 +161,7 @@ function searchCity() {
             searchHistory.push(cityName);
             localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
         }
+        $("input:text").val("");
         listSearchHistory();
     }
 }
