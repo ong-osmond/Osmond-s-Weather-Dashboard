@@ -123,7 +123,7 @@ function listSearchHistory() {
         if (cityName == null) {
             return;
         } else {
-            var city = $("<button>").text(cityName.toUpperCase());
+            var city = $("<button>").text(cityName);
             city.addClass("city-button");
             city.addClass("btn btn-primary btn-md btn-block");
             city.attr("id", "city-" + i);
@@ -143,7 +143,7 @@ function listSearchHistory() {
 
 //Main function to initiate searching a city and its weather
 function searchCity() {
-    var cityName = $("#searchCity").val();
+    var cityName = $("#searchCity").val().toUpperCase();
     if (cityName == "") {
         alert("Please enter a city.");
     } else {
