@@ -1,3 +1,5 @@
+/*jshint esversion: 6 */
+
 //Define global variables and default values
 var key = "59e42ab69c520d95ac336e9cccb57653";
 var forecastDays = 5; //configurable number of days to forecast
@@ -52,7 +54,6 @@ function getWeather(lat, lon) {
         var humidity = $("<p>").text("Humidity : " + response.current.humidity + "%");
         var windSpeed = $("<p>").text("Wind Speed : " + response.current.wind_speed + " m/s");
         var uvIndex = $("<p>").text("UV Index : " + response.current.uvi);
-        var uvColor = "";
         if (response.current.uvi <= 5) {
             uvIndex.attr("style", "background-color:yellow;"); //"moderate";
         } else if (response.current.uvi <= 7) {
@@ -71,7 +72,7 @@ function getWeather(lat, lon) {
         var forecast = response.daily;
         getForecast(forecast);
 
-    })
+    });
 
 }
 
@@ -108,18 +109,18 @@ function getCoordinates(cityName) {
             getWeather(cityLat, cityLon);
         }
 
-    )
+    );
 }
 
 //Handle search history
 function listSearchHistory() {
     $("#cities").empty();
-    if (JSON.parse(localStorage.searchHistory) != null) {
+    if (JSON.parse(localStorage.searchHistory) !== null) {
         searchHistory = JSON.parse(localStorage.searchHistory);
     } //Retrieve existing searchHistory from local storage
     for (i = searchHistory.length - 1; i >= (searchHistory.length - searchHistoryLength); i--) {
         var cityName = JSON.parse(localStorage.searchHistory)[i];
-        if (cityName == null) {
+        if (cityName === null) {
             return;
         } else {
             var city = $("<button>").text(cityName.toUpperCase());
@@ -143,18 +144,18 @@ function listSearchHistory() {
 //Main function to initiate searching a city and its weather
 function searchCity() {
     var cityName = $("#searchCity").val();
-    if (cityName == "") {
+    if (cityName === "") {
         alert("Please enter a city.");
     } else {
         $("#current-weather").empty();
         getCoordinates(cityName);
-        if (localStorage.getItem("searchHistory") == null ||
+        if (localStorage.getItem("searchHistory") === null ||
             localStorage.getItem("searchHistory") == 'undefined') {
             searchHistory.push(cityName);
             localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
         } else {
             //Retrieve existing searchHistory from local storage
-            if (JSON.parse(localStorage.searchHistory) != null) {
+            if (JSON.parse(localStorage.searchHistory) !== null) {
                 searchHistory = JSON.parse(localStorage.searchHistory);
             }
             //Update the searchHistory
@@ -168,10 +169,10 @@ function searchCity() {
 
 //Use local storage to remember the last search city and get the current weather
 function loadInitialCity() {
-    if (localStorage.searchHistory == null) {
-        return
+    if (localStorage.searchHistory === null) {
+        return;
     } else {
-        var searchHistoryLength = parseInt((JSON.parse(localStorage.searchHistory)).length - 1)
+        var searchHistoryLength = parseInt((JSON.parse(localStorage.searchHistory)).length - 1);
         var lastCityName = JSON.parse(localStorage.searchHistory)[searchHistoryLength];
         getCoordinates(lastCityName);
     }
@@ -190,11 +191,11 @@ $("#clear-history").on("click", function(event) {
     $("#cities").empty();
     $("#current-weather").empty();
     $("#forecast").empty();
-})
+});
 
 //-----Function calls on initial loading of the page-----//
 
-if (localStorage.searchHistory != null) {
+if (localStorage.searchHistory !== null) {
     listSearchHistory();
 }
 
