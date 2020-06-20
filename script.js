@@ -115,12 +115,12 @@ function getCoordinates(cityName) {
 //Handle search history
 function listSearchHistory() {
     $("#cities").empty();
-    if (JSON.parse(localStorage.searchHistory) !== null) {
+    if (JSON.parse(localStorage.searchHistory) != null) {
         searchHistory = JSON.parse(localStorage.searchHistory);
     } //Retrieve existing searchHistory from local storage
     for (i = searchHistory.length - 1; i >= (searchHistory.length - searchHistoryLength); i--) {
         var cityName = JSON.parse(localStorage.searchHistory)[i];
-        if (cityName === null) {
+        if (cityName == null) {
             return;
         } else {
             var city = $("<button>").text(cityName.toUpperCase());
@@ -144,12 +144,12 @@ function listSearchHistory() {
 //Main function to initiate searching a city and its weather
 function searchCity() {
     var cityName = $("#searchCity").val();
-    if (cityName === "") {
+    if (cityName == "") {
         alert("Please enter a city.");
     } else {
         $("#current-weather").empty();
         getCoordinates(cityName);
-        if (localStorage.getItem("searchHistory") === null ||
+        if (localStorage.getItem("searchHistory") == null ||
             localStorage.getItem("searchHistory") == 'undefined') {
             searchHistory.push(cityName);
             localStorage.setItem("searchHistory", JSON.stringify(searchHistory));
@@ -169,7 +169,7 @@ function searchCity() {
 
 //Use local storage to remember the last search city and get the current weather
 function loadInitialCity() {
-    if (localStorage.searchHistory === null) {
+    if (localStorage.searchHistory == null) {
         return;
     } else {
         var searchHistoryLength = parseInt((JSON.parse(localStorage.searchHistory)).length - 1);
@@ -195,7 +195,7 @@ $("#clear-history").on("click", function(event) {
 
 //-----Function calls on initial loading of the page-----//
 
-if (localStorage.searchHistory !== null) {
+if (localStorage.searchHistory != null) {
     listSearchHistory();
 }
 
