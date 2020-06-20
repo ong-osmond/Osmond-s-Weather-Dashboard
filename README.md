@@ -2,7 +2,7 @@
 
 You can find the application here: https://ong-osmond.github.io/Osmond-s-Weather-Dashboard/.
 
-![Index Page](/assets/Osmond-s-Weather Dashboard.png)
+![Index Page](/assets/Osmond-s-Weather%20Dashboard.png)
 
 ## Features and How To Use the Application:
 
