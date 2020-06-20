@@ -12,10 +12,10 @@ You can find the application here: https://ong-osmond.github.io/Osmond-s-Weather
 
 3. The centre of the page will display the city's current weather. The UV index colour will change depending on its value. 
 
-For UVI <= 5: yellow for  "moderate";  
-    UVI 6-  7: orange for "high"; 
-    UVI 8-10: red for "very high"; 
-    UVI 11: violet for "extreme".
+    For UVI <= 5: yellow for  "moderate";
+    <br> UVI 6-  7: orange for "high"; 
+    <br> UVI 8-10: red for "very high"; 
+    <br> UVI 11+: violet for "extreme".
 
 4. The right-hand side of the page will display the five-day forecast for that city.
 
